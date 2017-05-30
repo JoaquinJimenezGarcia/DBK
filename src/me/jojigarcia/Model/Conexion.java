@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Scanner;
 
 /**
  * Created by garci on 26/05/2017.
@@ -46,17 +47,64 @@ public class Conexion {
     }
 
     public void crearBaseDatos(String nombreDB) throws SQLException{
-        final String query = "CREATE DATABASE " + nombreDB;
+        final String QUERY = "CREATE DATABASE " + nombreDB;
         PreparedStatement db = null;
 
         try {
-            db = conexion.prepareStatement(query);
+            db = conexion.prepareStatement(QUERY);
             db.executeUpdate();
 
             conexion.commit();
             System.out.println("Base de datos: " + nombreDB + " creada con éxito.");
         } catch (SQLException e){
             System.out.println("Ha ocurrido un error al crear la base de datos.");
+            conexion.rollback();
+        } finally {
+            if (db!=null){
+                db.close();
+            }
+        }
+    }
+
+    public void crearTabla() throws SQLException {
+        Scanner input = new Scanner(System.in);
+        final String QUERY;
+        PreparedStatement db = null;
+        int atributos;
+        String nombre;
+        String [] listaAtributos;
+
+        System.out.println("Nombre de la tabla: ");
+        nombre = input.next();
+
+        System.out.println("Cuántos atributos va a tener?");
+        atributos = input.nextInt();
+        listaAtributos = new String[atributos];
+
+        QUERY = "Create TABLE " + nombre + " ";
+
+        for (int i = 0; i <= atributos; i++) {
+            System.out.println("Atributo " + (i+1) + " :");
+            listaAtributos[i] = input.next();
+        }
+
+
+        for (int i = 0; i < listaAtributos.length ; i++) {
+            String nombreAtr;
+
+            System.out.println("Introduzca nombre del parametro: ");
+            nombreAtr = input.next();
+            QUERY = QUERY + " " + nombre;
+        }
+
+        try {
+            db = conexion.prepareStatement(QUERY);
+            db.executeUpdate();
+
+            conexion.commit();
+            System.out.println("Tabla creada con éxito.");
+        } catch (SQLException e) {
+            System.out.println("Ha habido un error intentando añadir la tabla");
             conexion.rollback();
         } finally {
             if (db!=null){
